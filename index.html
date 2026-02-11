@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artemis | Premium Luau Environment</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts: Inter for UI, JetBrains Mono for Code -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Exact colors from your script */
+            --artemis-bg: #0a0a0f;     /* rgb(10, 10, 15) */
+            --artemis-purple: #8a2be2; /* rgb(138, 43, 226) */
+            --artemis-blue: #00aaff;   /* rgb(0, 170, 255) */
+            --fire-accent: #ff4500;    /* Fiery Orange */
+            --text-gray: #a0a0a0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030305;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+            color: white;
+            /* Deep, dark void background to let the card shine */
+            background-image: radial-gradient(circle at 50% 50%, #111 0%, #000 100%);
+        }
+
+        /* LIQUID GLASS ANIMATION & FILTER 
+           This creates the distorted, moving background
+        */
+        @keyframes liquidMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .premium-card {
+            position: relative;
+            width: 100%;
+            max-width: 950px;
+            min-height: 550px;
+            border-radius: 24px;
+            /* The Glass Properties */
+            background: rgba(10, 10, 15, 0.4); /* Very transparent to show liquid */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px); /* Blurs the liquid behind it */
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 
+                0 0 0 1px rgba(0,0,0, 0.5),
+                0 30px 60px -10px rgba(0, 0, 0, 0.9);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            z-index: 10;
+        }
+
+        /* The Liquid Layer */
+        .premium-card::before {
+            content: '';
+            position: absolute;
+            inset: -50px; /* Extend beyond edges for distortion */
+            z-index: -1;
+            /* The Fiery/Purple Gradient */
+            background: linear-gradient(
+                45deg, 
+                var(--artemis-bg), 
+                #4a0082, /* Indigo */
+                var(--artemis-purple), 
+                var(--fire-accent), /* Fire */
+                #240046
+            );
+            background-size: 400% 400%;
+            animation: liquidMove 15s ease infinite;
+            
+            /* Apply SVG Distortion Filter */
+            filter: url(#liquid-glass);
+            opacity: 0.6; /* Subtle glow */
+        }
+
+        /* Inner overlay to ensure text readability over the liquid */
+        .premium-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: linear-gradient(to right, rgba(10,10,15,0.9) 30%, rgba(10,10,15,0.4));
+            border-radius: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .premium-card {
+                grid-template-columns: 1fr;
+            }
+            .premium-card::after {
+                background: rgba(10,10,15,0.85);
+            }
+        }
+
+        /* LEFT SIDE: Info & Branding */
+        .brand-section {
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            z-index: 20;
+        }
+
+        .gradient-title {
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, var(--artemis-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(138, 43, 226, 0.5));
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 2.5rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            color: var(--text-gray);
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+        }
+
+        .feature-item:hover {
+            color: white;
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+
+        .feature-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--artemis-purple);
+            box-shadow: 0 0 10px var(--artemis-purple);
+        }
+
+        .feature-item:nth-child(2) .feature-icon { background: #ff4500; box-shadow: 0 0 10px #ff4500; } /* Fiery */
+        .feature-item:nth-child(3) .feature-icon { background: #ffd700; box-shadow: 0 0 10px #ffd700; } /* Gold */
+
+        /* RIGHT SIDE: The Actual Script UI Replica */
+        .ui-preview {
+            position: relative;
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Simulating the Roblox ScreenGui -> MainFrame */
+        .roblox-frame {
+            width: 320px;
+            height: 420px;
+            background-color: rgb(10, 10, 15);
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 
+                0 20px 50px rgba(0,0,0,0.8),
+                0 0 0 1px rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            z-index: 30;
+        }
+
+        .roblox-frame:hover {
+            transform: scale(1.02) translateY(-5px);
+            box-shadow: 
+                0 30px 60px rgba(0,0,0,0.9),
+                0 0 0 1px rgba(138, 43, 226, 0.4); /* Purple rim on hover */
+        }
+
+        /* Title Bar */
+        .title-bar {
+            height: 40px;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .title-label {
+            color: var(--artemis-purple);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 6px;
+        }
+
+        .control-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: default;
+        }
+
+        /* Content inside the frame */
+        .frame-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-area {
+            flex-grow: 1;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow-y: hidden;
+            /* Scrollbar styling */
+            scrollbar-width: thin;
+            scrollbar-color: var(--artemis-purple) transparent;
+        }
+
+        .message {
+            font-size: 12px;
+            line-height: 1.4;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeIn 0.4s forwards;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg-artemis { color: var(--artemis-purple); background: rgba(138, 43, 226, 0.05); }
+        .msg-user { color: var(--text-gray); align-self: flex-start; }
+        .msg-system { color: #50ff96; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+        .input-container {
+            height: 42px;
+            background-color: rgb(25, 25, 30);
+            border-radius: 21px;
+            display: flex;
+            align-items: center;
+            padding: 0 6px 0 15px;
+            margin-top: auto;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .fake-input {
+            flex-grow: 1;
+            color: white;
+            font-size: 13px;
+            opacity: 0.7;
+        }
+
+        .send-btn {
+            width: 36px;
+            height: 36px;
+            background-color: var(--artemis-purple);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.4);
+        }
+
+        /* Button Grid in Brand Section */
+        .action-btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.03);
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            backdrop-filter: blur(5px);
+        }
+
+        .action-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: white;
+            transform: translateY(-2px);
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, var(--artemis-purple), #6a0dad);
+            border-color: transparent;
+            box-shadow: 0 4px 20px rgba(138, 43, 226, 0.4);
+        }
+
+        .action-btn.primary:hover {
+            box-shadow: 0 8px 30px rgba(138, 43, 226, 0.6);
+            filter: brightness(1.2);
+        }
+
+        /* Script Code Snippet Decoration */
+        .code-bg {
+            position: absolute;
+            top: 20px; right: 20px; bottom: 20px;
+            width: 50%;
+            z-index: 10;
+            opacity: 0.05;
+            pointer-events: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            line-height: 1.6;
+            overflow: hidden;
+            white-space: pre;
+            color: white;
+            mask-image: linear-gradient(to right, transparent, black);
+        }
+
+        /* Particle/Glow effects */
+        .glow-spot {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 69, 0, 0.15) 0%, transparent 70%);
+            top: -100px;
+            right: -50px;
+            z-index: 0;
+            pointer-events: none;
+            mix-blend-mode: screen;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- SVG Filter for the Liquid Distortion -->
+    <svg style="display: none;">
+        <defs>
+            <filter id="liquid-glass">
+                <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="30" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+        </defs>
+    </svg>
+
+    <div class="premium-card">
+        <!-- Decoration: Code snippet -->
+        <div class="code-bg">
+-- ARTEMIS V2.4
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local Artemis = {}
+
+function Artemis:Init(mode)
+    if mode == "STEALTH" then
+        self:BypassAntiCheat()
+        print(":: SILENT EXECUTION ::")
+    end
+end
+        </div>
+
+        <!-- Glow Accent -->
+        <div class="glow-spot"></div>
+
+        <!-- Left Side: Branding -->
+        <div class="brand-section">
+            <div>
+                
+                
+                <h1 class="text-7xl font-bold tracking-tighter text-white mb-2" style="text-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                    Artemis
+                </h1>
+                
+                <h2 class="text-xl font-light text-gray-300 mb-8 max-w-md">
+                    Control reality with <span class="gradient-title">Artemis V1</span>.
+                </h2>
+                
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <div class="feature-icon"></div>
+                        <div class="flex flex-col">
+                            <span class="font-medium text-white">General Manipulation</span>
+                            <span class="text-xs text-gray-500">Speed, Noclip, Teleportation</span>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"></div>
+                        <div class="flex flex-col">
+                            <span class="font-medium text-white">Troll Suite</span>
+                            <span class="text-xs text-gray-500">Fling, Invisible, Disco Effects</span>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"></div>
+                        <div class="flex flex-col">
+                            <span class="font-medium text-white">Divine Intervention</span>
+                            <span class="text-xs text-gray-500">Walk on Water, Holy Light, Ascension</span>
+                        </div>
+                    </div>
+                                        <div class="feature-item">
+                        <div class="feature-icon"></div>
+                        <div class="flex flex-col">
+                            <span class="font-medium text-white">Premium Tier</span>
+                            <span class="text-xs text-gray-500">Get permanent free premium by joining the Discord server!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-4 mt-10">
+                <a href="#" class="action-btn primary">Get Free Access</a>
+                <a href="#" class="action-btn">Documentation</a>
+            </div>
+        </div>
+
+        <!-- Right Side: The Interactive Preview -->
+        <div class="ui-preview">
+            <!-- This recreates the Frame from your script -->
+            <div class="roblox-frame">
+                <!-- Title Bar -->
+                <div class="title-bar">
+                    <span class="title-label">Artemis</span>
+                    <div class="window-controls">
+                        <div class="control-btn" style="background: #282832; color: #fff;">-</div>
+                        <div class="control-btn" style="background: #ff3c3c; color: #fff;">X</div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="frame-content">
+                    <!-- Big Header Title (from script) -->
+                    <div class="text-center mt-6 mb-4">
+                        <h1 class="text-4xl font-bold text-white drop-shadow-md" style="color: var(--artemis-purple);">Artemis</h1>
+                    </div>
+
+                    <!-- Chat Log -->
+                    <div class="chat-area" id="chat-container">
+                        <div class="message msg-artemis">Artemis: What should I call you?</div>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="input-container">
+                        <div class="fake-input" id="typewriter-text"></div>
+                        <div class="send-btn">></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const typewriterText = document.getElementById('typewriter-text');
+        
+        // Sequence of events to simulate the script usage
+        const sequence = [
+            { text: "Lorem", type: "user", delay: 1000 },
+            { text: "Hello, Lorem!", type: "artemis", delay: 600 },
+            { text: "Enable Divine Mode", type: "user", delay: 1500 },
+            { text: "Opening divine menu...", type: "artemis", delay: 500 },
+            { text: "Executed: Walk on Water", type: "system", delay: 800 },
+            { text: "Executed: Holy Light [Range: 500]", type: "system", delay: 800 },
+            { text: "fling all", type: "user", delay: 2000 },
+            { text: "Opening troll menu...", type: "artemis", delay: 500 },
+            { text: "WARNING: Fling logic Enabled.", type: "system", delay: 500 }
+        ];
+
+        let seqIndex = 0;
+
+        async function typeText(text) {
+            typewriterText.innerText = "";
+            for (let i = 0; i < text.length; i++) {
+                typewriterText.innerText += text[i];
+                await new Promise(r => setTimeout(r, 40 + Math.random() * 40));
+            }
+            await new Promise(r => setTimeout(r, 300));
+        }
+
+        async function runSequence() {
+            while (true) { // Infinite loop
+                const step = sequence[seqIndex];
+                
+                if (step.type === "user") {
+                    // Simulate typing in the input box
+                    await typeText(step.text);
+                    typewriterText.innerText = ""; // Clear input
+                    
+                    // Add User Message
+                    addMessage("You: " + step.text, "msg-user");
+                } else if (step.type === "artemis") {
+                    await new Promise(r => setTimeout(r, step.delay));
+                    addMessage("Artemis: " + step.text, "msg-artemis");
+                } else {
+                    await new Promise(r => setTimeout(r, step.delay));
+                    addMessage(step.text, "msg-system");
+                }
+
+                seqIndex++;
+                if (seqIndex >= sequence.length) {
+                    await new Promise(r => setTimeout(r, 4000));
+                    // Clear chat to restart
+                    chatContainer.innerHTML = '<div class="message msg-artemis">Artemis: What should I call you?</div>';
+                    seqIndex = 0;
+                }
+            }
+        }
+
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.className = `message ${className}`;
+            div.innerText = text;
+            chatContainer.appendChild(div);
+            // Smooth scroll
+            chatContainer.scrollTo({
+                top: chatContainer.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        // Start the simulation
+        setTimeout(runSequence, 1000);
+    </script>
+</body>
+</html>
