@@ -6,7 +6,7 @@ local player = Players.LocalPlayer
 
 -- ==================== YOUR COMMANDS ====================
 local commandUrls = {
-	["noclip"] = "https://justaspoonful.github.io/Artemis/luau/noclip.lua",
+	["noclip"] = "https://raw.githubusercontent.com/justaspoonful/Artemis/master/luau/noclip.lua",
 	["fly"] = "https://yourdomain.com/lua/fly.lua",
 	["infiniteyield"] = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source",
 	["speed"] = "https://example.com/lua/speed.lua",
@@ -21,6 +21,11 @@ end
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ArtemisUI"
 screenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- Firebase Studio Colors
+local FIREBASE_ORANGE = Color3.fromRGB(255, 111, 0)
+local FIREBASE_YELLOW = Color3.fromRGB(255, 202, 40)
+local FIREBASE_RED = Color3.fromRGB(255, 61, 0)
 
 -- 20% smaller clean UI
 local mainFrame = Instance.new("Frame")
@@ -62,7 +67,7 @@ titleBarLabel.BackgroundTransparency = 1
 titleBarLabel.Text = "Artemis"
 titleBarLabel.Font = Enum.Font.GothamBold
 titleBarLabel.TextSize = 11
-titleBarLabel.TextColor3 = Color3.fromRGB(138, 43, 226)
+titleBarLabel.TextColor3 = FIREBASE_ORANGE
 titleBarLabel.TextXAlignment = Enum.TextXAlignment.Left
 titleBarLabel.Parent = titleBar
 
@@ -86,7 +91,7 @@ local closeBtn = Instance.new("TextButton")
 closeBtn.Name = "CloseBtn"
 closeBtn.Size = UDim2.new(0, 22, 0, 22)
 closeBtn.Position = UDim2.new(1, -24, 0, 5)
-closeBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+closeBtn.BackgroundColor3 = FIREBASE_RED
 closeBtn.Text = "X"
 closeBtn.TextColor3 = Color3.new(1, 1, 1)
 closeBtn.Font = Enum.Font.GothamBold
@@ -106,13 +111,14 @@ artemisTitle.BackgroundTransparency = 1
 artemisTitle.Text = "Artemis"
 artemisTitle.Font = Enum.Font.GothamBold
 artemisTitle.TextSize = 38
-artemisTitle.TextColor3 = Color3.fromRGB(138, 43, 226)
+artemisTitle.TextColor3 = FIREBASE_ORANGE
 artemisTitle.Parent = mainFrame
 
+-- Firebase gradient: Orange -> Yellow
 local gradientEffect = Instance.new("UIGradient")
 gradientEffect.Color = ColorSequence.new({
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(138, 43, 226)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 170, 255))
+	ColorSequenceKeypoint.new(0, FIREBASE_ORANGE),
+	ColorSequenceKeypoint.new(1, FIREBASE_YELLOW)
 })
 gradientEffect.Rotation = 45
 gradientEffect.Parent = artemisTitle
@@ -141,7 +147,7 @@ chatLog.Size = UDim2.new(1, 0, 1, 0)
 chatLog.BackgroundTransparency = 1
 chatLog.BorderSizePixel = 0
 chatLog.ScrollBarThickness = 3
-chatLog.ScrollBarImageColor3 = Color3.fromRGB(138, 43, 226)
+chatLog.ScrollBarImageColor3 = FIREBASE_ORANGE
 chatLog.CanvasSize = UDim2.new(0, 0, 0, 0)
 chatLog.Parent = chatContainer
 
@@ -186,7 +192,7 @@ local sendBtn = Instance.new("TextButton")
 sendBtn.Name = "SendBtn"
 sendBtn.Size = UDim2.new(0, 28, 0, 28)
 sendBtn.Position = UDim2.new(1, -34, 0.5, -14)
-sendBtn.BackgroundColor3 = Color3.fromRGB(138, 43, 226)
+sendBtn.BackgroundColor3 = FIREBASE_ORANGE
 sendBtn.Text = ">"
 sendBtn.TextColor3 = Color3.new(1, 1, 1)
 sendBtn.Font = Enum.Font.GothamBold
@@ -285,36 +291,42 @@ local function processCommand(text)
 
 	if responses[lower] then
 		local resp = responses[lower]
-		addMessage("Artemis", resp[math.random(#resp)], Color3.fromRGB(138, 43, 226))
+		addMessage("Artemis", resp[math.random(#resp)], FIREBASE_ORANGE)
 		return
 	end
 	for key, resp in pairs(responses) do
 		if string.find(lower, key) then
-			addMessage("Artemis", resp[math.random(#resp)], Color3.fromRGB(138, 43, 226))
+			addMessage("Artemis", resp[math.random(#resp)], FIREBASE_ORANGE)
 			return
 		end
 	end
 
 	if commandUrls[lower] then
 		local url = commandUrls[lower]
-		addMessage("Artemis", "Fetching " .. text .. "...", Color3.fromRGB(138, 43, 226))
+		addMessage("Artemis", "Fetching " .. text .. "...", FIREBASE_ORANGE)
 
 		local success, content = pcall(function()
 			return game:HttpGet(url, true)
 		end)
 
 		if success and content and #content > 50 then
-			local execSuccess, err = pcall(loadstring, content)
-			if execSuccess then
-				addMessage("Artemis", "✅ " .. text .. " loaded and executed!", Color3.fromRGB(50, 255, 150))
+			-- FIX: Actually execute the loaded function
+			local loadSuccess, loadedFunc = pcall(loadstring, content)
+			if loadSuccess and loadedFunc then
+				local execSuccess, execErr = pcall(loadedFunc)
+				if execSuccess then
+					addMessage("Artemis", "âœ… " .. text .. " loaded and executed!", Color3.fromRGB(50, 255, 150))
+				else
+					addMessage("Artemis", "âŒ Script execution error: " .. tostring(execErr), Color3.fromRGB(255, 100, 100))
+				end
 			else
-				addMessage("Artemis", "❌ Failed to run script: " .. tostring(err), Color3.fromRGB(255, 100, 100))
+				addMessage("Artemis", "âŒ Failed to load script: " .. tostring(loadedFunc), Color3.fromRGB(255, 100, 100))
 			end
 		else
-			addMessage("Artemis", "❌ Could not load script from that URL.", Color3.fromRGB(255, 150, 150))
+			addMessage("Artemis", "âŒ Could not load script from that URL.", Color3.fromRGB(255, 150, 150))
 		end
 	else
-		addMessage("Artemis", "❌ Unknown command. Add it to the commandUrls table at the top!", Color3.fromRGB(255, 150, 150))
+		addMessage("Artemis", "âŒ Unknown command. Add it to the commandUrls table at the top!", Color3.fromRGB(255, 150, 150))
 	end
 end
 
@@ -333,7 +345,7 @@ local function processInput()
 		wait(0.3)
 		local greetings = {"Hello, " .. preferredName .. "!", "Welcome, " .. preferredName .. "!", "Hi, " .. preferredName .. "!"}
 		greetingLabel.Text = greetings[math.random(#greetings)]
-		addMessage("Artemis", greetings[math.random(#greetings)], Color3.fromRGB(138, 43, 226))
+		addMessage("Artemis", greetings[math.random(#greetings)], FIREBASE_ORANGE)
 	else
 		wait(0.3)
 		processCommand(text)
@@ -361,4 +373,4 @@ for i = 1, #greetText do
 	wait(0.02)
 end
 
-print("Artemis loaded — original clean UI, 20% smaller!")
+print("Artemis loaded â€” Firebase Studio colors, fixed script execution!")
