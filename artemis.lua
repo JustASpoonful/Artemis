@@ -6,7 +6,7 @@ local player = Players.LocalPlayer
 
 -- ==================== YOUR COMMANDS ====================
 local commandUrls = {
-	["noclip"] = "https://justaspoonful.github.io/Artemis/luau/noclip.lua ",
+	["noclip"] = "https://justaspoonful.github.io/Artemis/luau/noclip.lua",
 	["fly"] = "https://yourdomain.com/lua/fly.lua",
 	["infiniteyield"] = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source",
 	["speed"] = "https://example.com/lua/speed.lua",
