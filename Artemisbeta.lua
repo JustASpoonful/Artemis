@@ -14,7 +14,7 @@ end
 
 -- ==================== YOUR COMMANDS ====================
 local commandUrls = {
-	["noclip"] = "https://raw.githubusercontent.com/justaspoonful/Artemis/main/luau/noclip.lua",
+	["essentials"] = "https://raw.githubusercontent.com/justaspoonful/Artemis/main/luau/noclip.lua",
 	["fly"] = "https://yourdomain.com/lua/fly.lua",
 	["infiniteyield"] = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source",
 	["speed"] = "https://example.com/lua/speed.lua",
