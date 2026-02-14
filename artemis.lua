@@ -1,12 +1,15 @@
+-- ==================== GEMINI-INSPIRED FLOWING GRADIENT (NO BLUE) ====================
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 
 -- ==================== YOUR COMMANDS ====================
 local commandUrls = {
-	["noclip"] = "https://raw.githubusercontent.com/justaspoonful/Artemis/master/luau/noclip.lua",
+	["noclip"] = "https://raw.githubusercontent.com/justaspoonful/Artemis/main/luau/noclip.lua",
 	["fly"] = "https://yourdomain.com/lua/fly.lua",
 	["infiniteyield"] = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source",
 	["speed"] = "https://example.com/lua/speed.lua",
@@ -22,20 +25,29 @@ local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ArtemisUI"
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Firebase Studio Colors
-local FIREBASE_ORANGE = Color3.fromRGB(255, 111, 0)
-local FIREBASE_YELLOW = Color3.fromRGB(255, 202, 40)
-local FIREBASE_RED = Color3.fromRGB(255, 61, 0)
+-- Gemini-inspired premium colors (no blue)
+local ACCENT_COLOR   = Color3.fromRGB(190, 100, 210)   -- Rich purple-magenta
+local GRAD_PURPLE    = Color3.fromRGB(130,  80, 220)
+local GRAD_MAGENTA   = Color3.fromRGB(220,  70, 180)
+local GRAD_PINK      = Color3.fromRGB(255,  90, 170)
+local GRAD_ORANGE    = Color3.fromRGB(255, 140,  60)
 
--- 20% smaller clean UI
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
 mainFrame.Size = UDim2.new(0, 256, 0, 336)
 mainFrame.Position = UDim2.new(0.5, -128, 0.5, -168)
-mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+mainFrame.BackgroundColor3 = Color3.fromRGB(13, 13, 20)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
+mainFrame.ClipsDescendants = true
 mainFrame.Parent = screenGui
+
+-- Premium subtle outline
+local mainStroke = Instance.new("UIStroke")
+mainStroke.Color = ACCENT_COLOR
+mainStroke.Thickness = 1.2
+mainStroke.Transparency = 0.75
+mainStroke.Parent = mainFrame
 
 local mainCorner = Instance.new("UICorner")
 mainCorner.CornerRadius = UDim.new(0, 10)
@@ -67,7 +79,7 @@ titleBarLabel.BackgroundTransparency = 1
 titleBarLabel.Text = "Artemis"
 titleBarLabel.Font = Enum.Font.GothamBold
 titleBarLabel.TextSize = 11
-titleBarLabel.TextColor3 = FIREBASE_ORANGE
+titleBarLabel.TextColor3 = ACCENT_COLOR
 titleBarLabel.TextXAlignment = Enum.TextXAlignment.Left
 titleBarLabel.Parent = titleBar
 
@@ -91,7 +103,7 @@ local closeBtn = Instance.new("TextButton")
 closeBtn.Name = "CloseBtn"
 closeBtn.Size = UDim2.new(0, 22, 0, 22)
 closeBtn.Position = UDim2.new(1, -24, 0, 5)
-closeBtn.BackgroundColor3 = FIREBASE_RED
+closeBtn.BackgroundColor3 = Color3.fromRGB(220, 38, 38)
 closeBtn.Text = "X"
 closeBtn.TextColor3 = Color3.new(1, 1, 1)
 closeBtn.Font = Enum.Font.GothamBold
@@ -103,43 +115,54 @@ local closeCorner = Instance.new("UICorner")
 closeCorner.CornerRadius = UDim.new(0, 5)
 closeCorner.Parent = closeBtn
 
+-- Content container (clean minimize)
+local contentFrame = Instance.new("Frame")
+contentFrame.Name = "ContentFrame"
+contentFrame.Size = UDim2.new(1, 0, 1, -32)
+contentFrame.Position = UDim2.new(0, 0, 0, 32)
+contentFrame.BackgroundTransparency = 1
+contentFrame.Parent = mainFrame
+
 local artemisTitle = Instance.new("TextLabel")
 artemisTitle.Name = "ArtemisTitle"
 artemisTitle.Size = UDim2.new(0, 224, 0, 48)
-artemisTitle.Position = UDim2.new(0.5, -112, 0, 40)
+artemisTitle.Position = UDim2.new(0.5, -112, 0, 8)
 artemisTitle.BackgroundTransparency = 1
 artemisTitle.Text = "Artemis"
 artemisTitle.Font = Enum.Font.GothamBold
 artemisTitle.TextSize = 38
-artemisTitle.TextColor3 = FIREBASE_ORANGE
-artemisTitle.Parent = mainFrame
+artemisTitle.TextColor3 = Color3.new(1, 1, 1)
+artemisTitle.Parent = contentFrame
 
--- Firebase gradient: Orange -> Yellow
+-- Gemini flowing gradient - STATIC (no animation)
 local gradientEffect = Instance.new("UIGradient")
 gradientEffect.Color = ColorSequence.new({
-	ColorSequenceKeypoint.new(0, FIREBASE_ORANGE),
-	ColorSequenceKeypoint.new(1, FIREBASE_YELLOW)
+	ColorSequenceKeypoint.new(0.00, GRAD_PURPLE),
+	ColorSequenceKeypoint.new(0.25, GRAD_MAGENTA),
+	ColorSequenceKeypoint.new(0.50, GRAD_PINK),
+	ColorSequenceKeypoint.new(0.75, GRAD_ORANGE),
+	ColorSequenceKeypoint.new(1.00, GRAD_PURPLE)
 })
-gradientEffect.Rotation = 45
+gradientEffect.Rotation = 0
 gradientEffect.Parent = artemisTitle
 
 local greetingLabel = Instance.new("TextLabel")
 greetingLabel.Name = "Greeting"
 greetingLabel.Size = UDim2.new(1, -24, 0, 20)
-greetingLabel.Position = UDim2.new(0, 12, 0, 92)
+greetingLabel.Position = UDim2.new(0, 12, 0, 60)
 greetingLabel.BackgroundTransparency = 1
 greetingLabel.Text = "What should I call you?"
 greetingLabel.Font = Enum.Font.Gotham
 greetingLabel.TextSize = 12
 greetingLabel.TextColor3 = Color3.fromRGB(160, 160, 160)
-greetingLabel.Parent = mainFrame
+greetingLabel.Parent = contentFrame
 
 local chatContainer = Instance.new("Frame")
 chatContainer.Name = "ChatContainer"
 chatContainer.Size = UDim2.new(1, -16, 1, -168)
-chatContainer.Position = UDim2.new(0, 8, 0, 116)
+chatContainer.Position = UDim2.new(0, 8, 0, 84)
 chatContainer.BackgroundTransparency = 1
-chatContainer.Parent = mainFrame
+chatContainer.Parent = contentFrame
 
 local chatLog = Instance.new("ScrollingFrame")
 chatLog.Name = "ChatLog"
@@ -147,7 +170,7 @@ chatLog.Size = UDim2.new(1, 0, 1, 0)
 chatLog.BackgroundTransparency = 1
 chatLog.BorderSizePixel = 0
 chatLog.ScrollBarThickness = 3
-chatLog.ScrollBarImageColor3 = FIREBASE_ORANGE
+chatLog.ScrollBarImageColor3 = ACCENT_COLOR
 chatLog.CanvasSize = UDim2.new(0, 0, 0, 0)
 chatLog.Parent = chatContainer
 
@@ -167,7 +190,7 @@ inputContainer.Size = UDim2.new(1, -16, 0, 34)
 inputContainer.Position = UDim2.new(0, 8, 1, -42)
 inputContainer.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
 inputContainer.BorderSizePixel = 0
-inputContainer.Parent = mainFrame
+inputContainer.Parent = contentFrame
 
 local inputCorner = Instance.new("UICorner")
 inputCorner.CornerRadius = UDim.new(0, 17)
@@ -192,7 +215,7 @@ local sendBtn = Instance.new("TextButton")
 sendBtn.Name = "SendBtn"
 sendBtn.Size = UDim2.new(0, 28, 0, 28)
 sendBtn.Position = UDim2.new(1, -34, 0.5, -14)
-sendBtn.BackgroundColor3 = FIREBASE_ORANGE
+sendBtn.BackgroundColor3 = ACCENT_COLOR
 sendBtn.Text = ">"
 sendBtn.TextColor3 = Color3.new(1, 1, 1)
 sendBtn.Font = Enum.Font.GothamBold
@@ -204,6 +227,7 @@ local sendCorner = Instance.new("UICorner")
 sendCorner.CornerRadius = UDim.new(1, 0)
 sendCorner.Parent = sendBtn
 
+-- Draggable
 local function makeDraggable(frame, handle)
 	local dragging = false
 	local dragInput, dragStart, startPos
@@ -232,12 +256,25 @@ local function makeDraggable(frame, handle)
 end
 makeDraggable(mainFrame, titleBar)
 
+-- Clean minimize (no squishing)
 local isMinimized = false
+local originalSize = UDim2.new(0, 256, 0, 336)
+local minimizedSize = UDim2.new(0, 256, 0, 32)
+
 minimizeBtn.MouseButton1Click:Connect(function()
 	isMinimized = not isMinimized
-	local targetSize = isMinimized and UDim2.new(0, 256, 0, 32) or UDim2.new(0, 256, 0, 336)
-	TweenService:Create(mainFrame, TweenInfo.new(0.25), {Size = targetSize}):Play()
-	minimizeBtn.Text = isMinimized and "+" or "-"
+	local targetSize = isMinimized and minimizedSize or originalSize
+	local tweenInfo = TweenInfo.new(0.32, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
+
+	if isMinimized then
+		contentFrame.Visible = false
+		TweenService:Create(mainFrame, tweenInfo, {Size = targetSize}):Play()
+		minimizeBtn.Text = "+"
+	else
+		contentFrame.Visible = true
+		TweenService:Create(mainFrame, tweenInfo, {Size = targetSize}):Play()
+		minimizeBtn.Text = "-"
+	end
 end)
 
 closeBtn.MouseButton1Click:Connect(function()
@@ -249,6 +286,7 @@ closeBtn.MouseButton1Click:Connect(function()
 	screenGui:Destroy()
 end)
 
+-- (Rest of the script is unchanged â€“ messages, commands, typing animation, etc.)
 local function addMessage(sender, text, color)
 	local msgFrame = Instance.new("Frame")
 	msgFrame.Name = "Message"
@@ -291,26 +329,25 @@ local function processCommand(text)
 
 	if responses[lower] then
 		local resp = responses[lower]
-		addMessage("Artemis", resp[math.random(#resp)], FIREBASE_ORANGE)
+		addMessage("Artemis", resp[math.random(#resp)], ACCENT_COLOR)
 		return
 	end
 	for key, resp in pairs(responses) do
 		if string.find(lower, key) then
-			addMessage("Artemis", resp[math.random(#resp)], FIREBASE_ORANGE)
+			addMessage("Artemis", resp[math.random(#resp)], ACCENT_COLOR)
 			return
 		end
 	end
 
 	if commandUrls[lower] then
 		local url = commandUrls[lower]
-		addMessage("Artemis", "Fetching " .. text .. "...", FIREBASE_ORANGE)
+		addMessage("Artemis", "Fetching " .. text .. "...", ACCENT_COLOR)
 
 		local success, content = pcall(function()
 			return game:HttpGet(url, true)
 		end)
 
 		if success and content and #content > 50 then
-			-- FIX: Actually execute the loaded function
 			local loadSuccess, loadedFunc = pcall(loadstring, content)
 			if loadSuccess and loadedFunc then
 				local execSuccess, execErr = pcall(loadedFunc)
@@ -345,7 +382,7 @@ local function processInput()
 		wait(0.3)
 		local greetings = {"Hello, " .. preferredName .. "!", "Welcome, " .. preferredName .. "!", "Hi, " .. preferredName .. "!"}
 		greetingLabel.Text = greetings[math.random(#greetings)]
-		addMessage("Artemis", greetings[math.random(#greetings)], FIREBASE_ORANGE)
+		addMessage("Artemis", greetings[math.random(#greetings)], ACCENT_COLOR)
 	else
 		wait(0.3)
 		processCommand(text)
@@ -373,4 +410,4 @@ for i = 1, #greetText do
 	wait(0.02)
 end
 
-print("Artemis loaded â€” Firebase Studio colors, fixed script execution!")
+print("Artemis loaded â€” Gemini flowing gradient (purple â†’ magenta â†’ pink â†’ orange)")
